@@ -111,7 +111,7 @@ func presentQRCode(pl meddler.Payload, res http.ResponseWriter, req *http.Reques
 	}
 
 	uri := pl.URI
-	pngImage, err := qrcode.Encode(uri, 256)
+	pngImage, err := qrcode.Encode(uri, qrcode.Medium, 256)
 	if err != nil {
 		fmt.Fprintf(res, "%s %v\n", uri, err)
 		return

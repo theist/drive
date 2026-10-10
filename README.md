@@ -14,7 +14,6 @@ After five years without updates, and with Google having blocked the way drive u
 - [Installing](#installing)
   - [Requirements](#requirements)
   - [From sources](#from-sources)
-  - [Godep](#godep)
   - [Platform Packages](#platform-packages)
     - [Automation Scripts](#automation-scripts)
   - [Cross Compilation](#cross-compilation)
@@ -80,16 +79,9 @@ After five years without updates, and with Google having blocked the way drive u
 
 go 1.26 or higher is required, which is the oldest release that the Go team still maintains. See [here](https://go.dev/doc/install) for installation instructions and platform installers.
 
-* Make sure to set your GOPATH in your env, .bashrc or .bash\_profile file. If you have not yet set it, you can do so like this:
-
-```shell
-cat << ! >> ~/.bashrc
-> export GOPATH=\$HOME/gopath
-> export PATH=\$GOPATH:\$GOPATH/bin:\$PATH
-> !
-source ~/.bashrc # To reload the settings and get the newly set ones # Or open a fresh terminal
-```
-The above setup will ensure that the drive binary after compilation can be invoked from your current path.
+`go install` puts the binaries in the directory that `go env GOBIN` prints or, if that prints nothing, in the `bin` directory
+of the one that `go env GOPATH` prints, by default `~/go/bin`. Make sure that directory is in your `PATH` so that
+drive can be invoked from anywhere.
 
 ### From sources
 
@@ -101,43 +93,21 @@ To install from the latest source, run:
 go install github.com/theist/drive/v4/cmd/drive@latest
 ```
 
-Otherwise:
-
-* In order to address [issue #138](https://github.com/odeke-em/drive/issues/138), where debug information should be bundled with the binary, you'll need to run:
+In case you need a binary with a specific name e.g for Debian folks [issue #271](https://github.com/odeke-em/drive/issues/271) and [issue 277](https://github.com/odeke-em/drive/issues/277)
 
 ```shell
-go get github.com/odeke-em/drive/drive-gen && drive-gen
-```
-
-In case you need a specific binary e.g for Debian folks [issue #271](https://github.com/odeke-em/drive/issues/271) and [issue 277](https://github.com/odeke-em/drive/issues/277)
-
-```shell
-go get -u github.com/odeke-em/drive/drive-google
+go install github.com/theist/drive/v4/drive-google@latest
 ```
 
 That should produce a binary `drive-google`
 
-OR
-
-To bundle debug information with the binary, you can run:
+To build from a local copy of the sources instead:
 
 ```shell
-go get -u github.com/odeke-em/drive/drive-gen && drive-gen drive-google
+git clone https://github.com/theist/drive.git
+cd drive
+go install ./cmd/drive
 ```
-
-### Godep
-
-+ Using godep
-```
-cd $GOPATH/src/github.com/odeke-em/drive/drive-gen && godep save
-```
-
-+ Unravelling/Restoring dependencies
-```
-cd $GOPATH/src/github.com/odeke-em/drive/drive-gen && godep restore
-```
-
-Please see file `drive-gen/README.md` for more information.
 
 ### Platform Packages
 
@@ -727,7 +697,7 @@ drive push -retry-count 4 a/bc/def terms
 `-upload-chunk-size` whose value is in bytes. If you don't specify this flag, by default
 the internal Google APIs use a value of 8MiB from constant `googleapi.DefaultUploadChunkSize`.
 Please note that your value has to be a multiple of and atleast the minimum  upload chunksize
-of 256KiB from constant `googleapi.MinUploadChunkSize`. See https://godoc.org/google.golang.org/api/googleapi#pkg-constants.
+of 256KiB from constant `googleapi.MinUploadChunkSize`. See https://pkg.go.dev/google.golang.org/api/googleapi#pkg-constants.
   If `-upload-chunk-size` is not set yet `-upload-rate-limit` is, `-upload-chunk-size` will be the same as `-upload-rate-limit`.
 
 * To limit the upload bandwidth, please set `-upload-rate-limit=n`. It's in `n` KiB/s, default is unlimited.
@@ -924,7 +894,7 @@ drive touch -format "2006-01-02-15:04:05.0000Z" -time "2016-02-03-08:12:15.0070Z
 ```
 The mentioned time format has to be relative to how you would represent
 "Mon Jan 2 15:04:05 -0700 MST 2006".
-See the documentation for time formatting here [time.Parse](https://golang.org/pkg/time/#Parse)
+See the documentation for time formatting here [time.Parse](https://pkg.go.dev/time#Parse)
 
 + Specify the touch time offset from the clock on your machine where:
 - minus(-) means ago e.g 30 hours ago -> -30h
@@ -1344,7 +1314,7 @@ drive index -all-ops
 To enable services like qr-code sharing, you'll need to have the server running that will serve content once invoked in a web browser to allow for resources to be accessed on another device e.g your mobile phone
 
 ```shell
-go get github.com/odeke-em/drive/drive-server && drive-server
+go install github.com/theist/drive/v4/drive-server@latest
 drive-server
 ```
 
@@ -1432,26 +1402,29 @@ To revoke OAuth Access of drive to your account, when logged in with your Google
 
 ### Uninstalling
 
-To remove `drive` from your computer, you'll need to take out:
-+ $GOPATH/bin/drive
-+ $GOPATH/src/github.com/odeke-em/drive
-+ $GOPATH/pkg/github.com/odeke-em/drive
-+ $GOPATH/pkg/github.com/odeke-em/drive.a
+To remove `drive` from your computer, you'll need to take out the binary that `go install` produced,
+which is in the directory that `go env GOBIN` prints or else in the `bin` directory of the one that `go env GOPATH` prints:
+
+```shell
+rm "$(go env GOPATH)/bin/drive"
+```
+
+as well as your local copy of the sources, if you cloned them.
 
 * Also do not forget to revoke drive's access in case you need to uninstall it.
 
 ## Applying Patches 
 To  apply patches of code e.g in the midst of bug fixes, you'll just need a little bit of git fiddling.
 
-For example to patch your code with that on remote branch patch-1, you'll need to go into the source
-code directory, fetch all content from the git remote, checkout the patch branch then run the go installation: something like this.
+For example to patch your code with that on remote branch patch-1, you'll need to go into your local copy of the
+sources, fetch all content from the git remote, checkout the patch branch then run the go installation: something like this.
 
 ```shell
-cd $GOPATH/src/github.com/odeke-em/drive
+cd drive
 git fetch --all
 git checkout patch-1
 git pull origin patch-1
-go get github.com/odeke-em/drive/cmd/drive
+go install ./cmd/drive
 ```
 
 ## Why Another Google Drive Client?
