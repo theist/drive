@@ -375,8 +375,10 @@ func Initialize(absPath string) (pathGD string, firstInit bool, c *Context, err 
 	if err = os.MkdirAll(pathGD, 0755); err != nil {
 		return
 	}
+	// The credentials are only written once they have been obtained, so that
+	// failing to initialize doesn't leave behind credentials that are blank,
+	// nor does it wipe out those of an already initialized drive.
 	c = &Context{AbsPath: absPath}
-	err = c.Write()
 	return
 }
 
