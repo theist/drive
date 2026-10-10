@@ -28,10 +28,10 @@ import (
 	"strings"
 
 	"github.com/odeke-em/command"
-	"github.com/odeke-em/drive/config"
-	"github.com/odeke-em/drive/gen"
-	"github.com/odeke-em/drive/src"
-	"github.com/odeke-em/drive/src/dcrypto"
+	"github.com/theist/drive/v4/config"
+	"github.com/theist/drive/v4/gen"
+	"github.com/theist/drive/v4/src"
+	"github.com/theist/drive/v4/src/dcrypto"
 )
 
 var context *config.Context
@@ -174,13 +174,19 @@ func (cmd *initCmd) Flags(fs *flag.FlagSet) *flag.FlagSet {
 }
 
 func (cmd *initCmd) Run(args []string, definedFlags map[string]*flag.Flag) {
-	comm := drive.New(initContext(args), nil)
-	gcsJSONFile := *cmd.ServiceAccountJSONFile
-	if gcsJSONFile == "" {
-		exitWithError(comm.Init())
+	context, undoInit := initContext(args)
+	comm := drive.New(context, nil)
+
+	var err error
+	if gcsJSONFile := *cmd.ServiceAccountJSONFile; gcsJSONFile == "" {
+		err = comm.Init()
 	} else {
-		exitWithError(comm.InitWithServiceAccount(gcsJSONFile))
+		err = comm.InitWithServiceAccount(gcsJSONFile)
 	}
+	if err != nil {
+		undoInit()
+	}
+	exitWithError(err)
 }
 
 type deInitCmd struct {
@@ -1943,27 +1949,33 @@ func (cmd *issueCmd) Run(args []string, definedFlags map[string]*flag.Flag) {
 	exitWithError(drive.New(context, opts).FileIssue())
 }
 
-func initContext(args []string) *config.Context {
+// initContext also returns the function that undoes
+// the initialization, to be invoked if it doesn't complete.
+func initContext(args []string) (*config.Context, func()) {
 	var err error
 	var gdPath string
 	var firstInit bool
 
 	gdPath, firstInit, context, err = config.Initialize(getContextPath(args))
 
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill)
-
-	// The signal handler should clean up the .gd path if this is the first time
-	go func() {
-		_ = <-c
+	// Clean up the .gd path if this is the first time
+	undo := func() {
 		if firstInit {
 			os.RemoveAll(gdPath)
 		}
+	}
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, os.Kill)
+
+	go func() {
+		_ = <-c
+		undo()
 		os.Exit(1)
 	}()
 
 	exitWithError(err)
-	return context
+	return context, undo
 }
 
 func discoverContext(args []string) (*config.Context, string) {

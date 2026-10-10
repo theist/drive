@@ -21,7 +21,7 @@ import (
 	drive "google.golang.org/api/drive/v2"
 )
 
-const Version = "0.3.9.1"
+const Version = "4.0.0"
 
 const (
 	Barely = iota

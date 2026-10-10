@@ -1,11 +1,10 @@
-module github.com/odeke-em/drive
+module github.com/theist/drive/v4
 
-go 1.16
+go 1.26
 
 require (
 	github.com/boltdb/bolt v1.3.1
 	github.com/cheggaaa/pb v1.0.29
-	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/go-martini/martini v0.0.0-20170121215854-22fa46961aab
 	github.com/martini-contrib/binding v0.0.0-20160701174519-05d3e151b6cf
 	github.com/mattn/go-isatty v0.0.12
@@ -16,7 +15,6 @@ require (
 	github.com/odeke-em/exponential-backoff v0.0.0-20150606110550-96e25d36ae36
 	github.com/odeke-em/extractor v0.0.0-20150727035912-801861aedb85
 	github.com/odeke-em/go-utils v0.0.0-20170224015737-e8ebaed0777a
-	github.com/odeke-em/go-uuid v0.0.0-20151221120446-b211d769a9aa // indirect
 	github.com/odeke-em/log v0.0.0-20170107003526-8d60a6917853
 	github.com/odeke-em/meddler v0.0.0-20151019050616-d2b51d2b40e7
 	github.com/odeke-em/namespace v0.0.0-20161218061609-0ab79ba44f13
@@ -30,4 +28,21 @@ require (
 	golang.org/x/net v0.0.0-20201216054612-986b41b23924
 	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5
 	google.golang.org/api v0.36.0
+)
+
+require (
+	cloud.google.com/go v0.72.0 // indirect
+	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
+	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
+	github.com/golang/protobuf v1.4.3 // indirect
+	github.com/googleapis/gax-go/v2 v2.0.5 // indirect
+	github.com/mattn/go-runewidth v0.0.4 // indirect
+	github.com/odeke-em/go-uuid v0.0.0-20151221120446-b211d769a9aa // indirect
+	go.opencensus.io v0.22.5 // indirect
+	golang.org/x/sys v0.0.0-20201201145000-ef89a241ccb3 // indirect
+	golang.org/x/text v0.3.4 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/genproto v0.0.0-20201201144952-b05cb90ed32e // indirect
+	google.golang.org/grpc v1.33.2 // indirect
+	google.golang.org/protobuf v1.25.0 // indirect
 )

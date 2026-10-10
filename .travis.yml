@@ -1,9 +1,0 @@
-sudo: false
-language: go
-go:
-  - 1.9
-  - tip
-install:
-  - go get -t ./...
-script:
-  go test -v -race -cover ./src/...

@@ -457,7 +457,7 @@ func TestCrudToAtoi(t *testing.T) {
 
 	for _, tc := range testCases {
 		if got, want := CrudAtoi(tc.specimen...), tc.want; got != want {
-			t.Errorf("given specimen %v, expected %q instead got %q", tc.specimen, want, got)
+			t.Errorf("given specimen %v, expected %v instead got %v", tc.specimen, want, got)
 		}
 	}
 }

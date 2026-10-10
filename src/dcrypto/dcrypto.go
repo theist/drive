@@ -23,7 +23,7 @@ import (
 	"hash"
 	"io"
 
-	"github.com/odeke-em/drive/src/dcrypto/v1"
+	"github.com/theist/drive/v4/src/dcrypto/v1"
 )
 
 // Version is the version of the en/decryption library used.

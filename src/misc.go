@@ -35,7 +35,7 @@ import (
 
 	expirableCache "github.com/odeke-em/cache"
 	spinner "github.com/odeke-em/cli-spinner"
-	"github.com/odeke-em/drive/config"
+	"github.com/theist/drive/v4/config"
 )
 
 var (

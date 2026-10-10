@@ -1,17 +1,19 @@
 # drive
 
-[![Build Status](https://travis-ci.org/odeke-em/drive.png?branch=master)](https://travis-ci.org/odeke-em/drive)
+[![Tests](https://github.com/theist/drive/actions/workflows/test.yml/badge.svg)](https://github.com/theist/drive/actions/workflows/test.yml)
+[![Release](https://github.com/theist/drive/actions/workflows/release.yml/badge.svg)](https://github.com/theist/drive/releases/latest)
 
 `drive` is a tiny program to pull or push [Google Drive](https://drive.google.com) files.
 
-`drive` was originally developed by [Burcu Dogan](https://github.com/rakyll) while working on the Google Drive team. Since she is very busy and no longer able to maintain it, I took over drive on `Thursday, 1st January 2015`. This repository contains the latest version of the code.
+`drive` was originally developed by [Burcu Dogan](https://github.com/rakyll) while working on the Google Drive team. Since she is very busy and no longer able to maintain it, [Emmanuel Odeke](https://github.com/odeke-em) took over drive on `Thursday, 1st January 2015`, and maintained it in [his repository](https://github.com/odeke-em/drive).
+
+After five years without updates, and with Google having blocked the way drive used to authorize, I used [Claude](https://claude.com/claude-code) to try to fix the authorization. This repository contains that version of the code.
 
 ## Table of Contents
 
 - [Installing](#installing)
   - [Requirements](#requirements)
   - [From sources](#from-sources)
-  - [Godep](#godep)
   - [Platform Packages](#platform-packages)
     - [Automation Scripts](#automation-scripts)
   - [Cross Compilation](#cross-compilation)
@@ -75,64 +77,37 @@
 
 ### Requirements
 
-go 1.9.X or higher is required. See [here](https://golang.org/doc/install) for installation instructions and platform installers.
+go 1.26 or higher is required, which is the oldest release that the Go team still maintains. See [here](https://go.dev/doc/install) for installation instructions and platform installers.
 
-* Make sure to set your GOPATH in your env, .bashrc or .bash\_profile file. If you have not yet set it, you can do so like this:
-
-```shell
-cat << ! >> ~/.bashrc
-> export GOPATH=\$HOME/gopath
-> export PATH=\$GOPATH:\$GOPATH/bin:\$PATH
-> !
-source ~/.bashrc # To reload the settings and get the newly set ones # Or open a fresh terminal
-```
-The above setup will ensure that the drive binary after compilation can be invoked from your current path.
+`go install` puts the binaries in the directory that `go env GOBIN` prints or, if that prints nothing, in the `bin` directory
+of the one that `go env GOPATH` prints, by default `~/go/bin`. Make sure that directory is in your `PATH` so that
+drive can be invoked from anywhere.
 
 ### From sources
+
+Prebuilt binaries for Linux, macOS and Windows are attached to each [release](https://github.com/theist/drive/releases/latest).
 
 To install from the latest source, run:
 
 ```shell
-go get -u github.com/odeke-em/drive/cmd/drive
+go install github.com/theist/drive/v4/cmd/drive@latest
 ```
 
-Otherwise:
-
-* In order to address [issue #138](https://github.com/odeke-em/drive/issues/138), where debug information should be bundled with the binary, you'll need to run:
+In case you need a binary with a specific name e.g for Debian folks [issue #271](https://github.com/odeke-em/drive/issues/271) and [issue 277](https://github.com/odeke-em/drive/issues/277)
 
 ```shell
-go get github.com/odeke-em/drive/drive-gen && drive-gen
-```
-
-In case you need a specific binary e.g for Debian folks [issue #271](https://github.com/odeke-em/drive/issues/271) and [issue 277](https://github.com/odeke-em/drive/issues/277)
-
-```shell
-go get -u github.com/odeke-em/drive/drive-google
+go install github.com/theist/drive/v4/drive-google@latest
 ```
 
 That should produce a binary `drive-google`
 
-OR
-
-To bundle debug information with the binary, you can run:
+To build from a local copy of the sources instead:
 
 ```shell
-go get -u github.com/odeke-em/drive/drive-gen && drive-gen drive-google
+git clone https://github.com/theist/drive.git
+cd drive
+go install ./cmd/drive
 ```
-
-### Godep
-
-+ Using godep
-```
-cd $GOPATH/src/github.com/odeke-em/drive/drive-gen && godep save
-```
-
-+ Unravelling/Restoring dependencies
-```
-cd $GOPATH/src/github.com/odeke-em/drive/drive-gen && godep restore
-```
-
-Please see file `drive-gen/README.md` for more information.
 
 ### Platform Packages
 
@@ -161,7 +136,45 @@ Also inspect file `bin/md5Sums.txt` after the cross compilation.
 
 ### API keys
 
-Optionally set the `GOOGLE_API_CLIENT_ID` and `GOOGLE_API_CLIENT_SECRET` environment variables to use your own API keys.
+`drive init` needs your own API keys, set in the `GOOGLE_API_CLIENT_ID` and `GOOGLE_API_CLIENT_SECRET` environment variables.
+They get saved along with the rest of the credentials of the drive being initialized, so they only have to be set for `drive init`.
+
+#### Why the built-in API keys no longer work
+
+drive used to work out of the box with the API keys that are built into it. That is no longer possible:
+with them, Google refuses the authorization with the page
+"This app is blocked: This app tried to access sensitive info in your Google Account".
+
+drive asks for full access to your Google Drive, which Google classifies as a restricted scope. For an app to be
+allowed to request it from the general public, the owner of its API keys has to pass Google's OAuth verification,
+which for restricted scopes involves, among other requirements, a recurring security assessment by a third party.
+The built-in API keys belong to a Google Cloud project of the original author, who made drive for the love of
+the tool, and that project hasn't gone through that verification. drive is nowadays being fixed by someone else,
+also for the love of the tool, and without the means that such a verification demands: there is no plan
+to go through it with new API keys.
+
+The built-in API keys are therefore deprecated and `drive init` fails unless your own API keys are set.
+
+API keys that you create yourself, to access your own Google Drive, don't need that verification.
+
+#### Creating your own API keys
+
+1. Create a project in the [Google Cloud console](https://console.cloud.google.com/).
+2. Enable the [Google Drive API](https://console.cloud.google.com/apis/library/drive.googleapis.com) for that project.
+3. Configure the project's OAuth consent screen: pick the "External" user type, unless every user belongs
+to your Google Workspace organization, and add the Google accounts that will use drive as test users.
+4. Create an OAuth client ID of application type "Desktop app", which is the type that Google lets redirect to
+the loopback address that `drive init` listens on, [see authorizing](#authorizing).
+5. Initialize your drive with the client ID and the client secret that you are given:
+
+```shell
+GOOGLE_API_CLIENT_ID=<client_id> GOOGLE_API_CLIENT_SECRET=<client_secret> drive init ~/gdrive
+```
+
+While the consent screen's publishing status is "Testing", Google expires the authorization after 7 days
+and `drive init` has to be run again. To avoid that, publish the app i.e. set its status to "In production":
+it doesn't have to go through Google's verification for your own use, authorizing then just shows a
+"Google hasn't verified this app" warning that you can proceed past.
 
 ## Usage
 
@@ -178,6 +191,23 @@ Before you can use `drive`, you'll need to mount your Google Drive directory on 
 drive init ~/gdrive
 cd ~/gdrive
 ```
+
+##### Authorizing
+
+`drive init` prints a URL to visit in order to grant drive access to your Google Drive.
+Once you approve, Google redirects your browser to a port on the loopback address `http://127.0.0.1:<port>`
+that `drive init` is listening on for that occasion, and the initialization then completes by itself.
+
+If the browser runs on another machine than drive, for example when drive is on a server that you
+are logged into by SSH, the browser can't reach that address and fails to load the page after
+you approve. That is expected: copy the URL of that failed page, which looks like
+`http://127.0.0.1:<port>/?state=...&code=...`, from the browser's address bar and paste it into the
+prompt of `drive init`.
+
+This replaces the copying and pasting of an authorization code, the "out-of-band" flow, which Google
+[has blocked](https://developers.google.com/identity/protocols/oauth2/resources/oob-migration) with the error
+"The out-of-band (OOB) flow has been blocked in order to keep users secure". Drives that are
+already initialized keep on working without having to be initialized again.
 
 #### Google Service Account credentials
 ```shell
@@ -667,7 +697,7 @@ drive push -retry-count 4 a/bc/def terms
 `-upload-chunk-size` whose value is in bytes. If you don't specify this flag, by default
 the internal Google APIs use a value of 8MiB from constant `googleapi.DefaultUploadChunkSize`.
 Please note that your value has to be a multiple of and atleast the minimum  upload chunksize
-of 256KiB from constant `googleapi.MinUploadChunkSize`. See https://godoc.org/google.golang.org/api/googleapi#pkg-constants.
+of 256KiB from constant `googleapi.MinUploadChunkSize`. See https://pkg.go.dev/google.golang.org/api/googleapi#pkg-constants.
   If `-upload-chunk-size` is not set yet `-upload-rate-limit` is, `-upload-chunk-size` will be the same as `-upload-rate-limit`.
 
 * To limit the upload bandwidth, please set `-upload-rate-limit=n`. It's in `n` KiB/s, default is unlimited.
@@ -864,7 +894,7 @@ drive touch -format "2006-01-02-15:04:05.0000Z" -time "2016-02-03-08:12:15.0070Z
 ```
 The mentioned time format has to be relative to how you would represent
 "Mon Jan 2 15:04:05 -0700 MST 2006".
-See the documentation for time formatting here [time.Parse](https://golang.org/pkg/time/#Parse)
+See the documentation for time formatting here [time.Parse](https://pkg.go.dev/time#Parse)
 
 + Specify the touch time offset from the clock on your machine where:
 - minus(-) means ago e.g 30 hours ago -> -30h
@@ -1284,7 +1314,7 @@ drive index -all-ops
 To enable services like qr-code sharing, you'll need to have the server running that will serve content once invoked in a web browser to allow for resources to be accessed on another device e.g your mobile phone
 
 ```shell
-go get github.com/odeke-em/drive/drive-server && drive-server
+go install github.com/theist/drive/v4/drive-server@latest
 drive-server
 ```
 
@@ -1372,26 +1402,29 @@ To revoke OAuth Access of drive to your account, when logged in with your Google
 
 ### Uninstalling
 
-To remove `drive` from your computer, you'll need to take out:
-+ $GOPATH/bin/drive
-+ $GOPATH/src/github.com/odeke-em/drive
-+ $GOPATH/pkg/github.com/odeke-em/drive
-+ $GOPATH/pkg/github.com/odeke-em/drive.a
+To remove `drive` from your computer, you'll need to take out the binary that `go install` produced,
+which is in the directory that `go env GOBIN` prints or else in the `bin` directory of the one that `go env GOPATH` prints:
+
+```shell
+rm "$(go env GOPATH)/bin/drive"
+```
+
+as well as your local copy of the sources, if you cloned them.
 
 * Also do not forget to revoke drive's access in case you need to uninstall it.
 
 ## Applying Patches 
 To  apply patches of code e.g in the midst of bug fixes, you'll just need a little bit of git fiddling.
 
-For example to patch your code with that on remote branch patch-1, you'll need to go into the source
-code directory, fetch all content from the git remote, checkout the patch branch then run the go installation: something like this.
+For example to patch your code with that on remote branch patch-1, you'll need to go into your local copy of the
+sources, fetch all content from the git remote, checkout the patch branch then run the go installation: something like this.
 
 ```shell
-cd $GOPATH/src/github.com/odeke-em/drive
+cd drive
 git fetch --all
 git checkout patch-1
 git pull origin patch-1
-go get github.com/odeke-em/drive/cmd/drive
+go install ./cmd/drive
 ```
 
 ## Why Another Google Drive Client?

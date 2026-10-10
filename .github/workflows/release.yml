@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  # To build the binaries of a tag that already exists.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to release e.g. v4.0.0
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - name: Test
+        run: go test ./src/...
+      - name: Build the binaries
+        run: |
+          mkdir dist
+          build() {
+            local name="drive_$1" goos="$2" goarch="$3" goarm="$4"
+            echo "Building $name"
+            CGO_ENABLED=0 GOOS="$goos" GOARCH="$goarch" GOARM="$goarm" \
+              go build -trimpath -ldflags "-s -w" -o "dist/$name" ./cmd/drive
+          }
+          build linux_amd64       linux   amd64
+          build linux_arm64       linux   arm64
+          build linux_armv5       linux   arm   5
+          build linux_armv6       linux   arm   6
+          build linux_armv7       linux   arm   7
+          build darwin_amd64      darwin  amd64
+          build darwin_arm64      darwin  arm64
+          build windows_amd64.exe windows amd64
+          cd dist && sha256sum drive_* > sha256sums.txt && cat sha256sums.txt
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber
+          else
+            gh release create "$TAG" dist/* --title "$TAG" --generate-notes --verify-tag
+          fi

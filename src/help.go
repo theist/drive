@@ -112,7 +112,7 @@ const (
 	FolderKey                = "folder"
 	MimeKey                  = "mime-key"
 	PageSizeKey              = "pagesize"
-	DriveRepoRelPath         = "github.com/odeke-em/drive"
+	DriveRepoRelPath         = "github.com/theist/drive"
 	UrlKey                   = "url"
 	ReportIssueKey           = "report-issue"
 	IssueTitleKey            = "title"

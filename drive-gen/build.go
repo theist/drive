@@ -21,12 +21,12 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/odeke-em/drive/src"
+	"github.com/theist/drive/v4/src"
 	"github.com/odeke-em/go-utils/pkger/src"
 	"github.com/odeke-em/ripper/src"
 
 	_ "github.com/odeke-em/command"
-	_ "github.com/odeke-em/drive/config"
+	_ "github.com/theist/drive/v4/config"
 )
 
 var AliasBinaryDir = "drive-google"
