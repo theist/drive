@@ -1,6 +1,7 @@
 # drive
 
-[![Build Status](https://travis-ci.org/odeke-em/drive.png?branch=master)](https://travis-ci.org/odeke-em/drive)
+[![Tests](https://github.com/theist/drive/actions/workflows/test.yml/badge.svg)](https://github.com/theist/drive/actions/workflows/test.yml)
+[![Release](https://github.com/theist/drive/actions/workflows/release.yml/badge.svg)](https://github.com/theist/drive/releases/latest)
 
 `drive` is a tiny program to pull or push [Google Drive](https://drive.google.com) files.
 
@@ -89,6 +90,8 @@ source ~/.bashrc # To reload the settings and get the newly set ones # Or open a
 The above setup will ensure that the drive binary after compilation can be invoked from your current path.
 
 ### From sources
+
+Prebuilt binaries for Linux, macOS and Windows are attached to each [release](https://github.com/theist/drive/releases/latest).
 
 To install from the latest source, run:
 
