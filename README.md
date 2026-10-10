@@ -78,7 +78,7 @@ After five years without updates, and with Google having blocked the way drive u
 
 ### Requirements
 
-go 1.9.X or higher is required. See [here](https://golang.org/doc/install) for installation instructions and platform installers.
+go 1.26 or higher is required, which is the oldest release that the Go team still maintains. See [here](https://go.dev/doc/install) for installation instructions and platform installers.
 
 * Make sure to set your GOPATH in your env, .bashrc or .bash\_profile file. If you have not yet set it, you can do so like this:
 
