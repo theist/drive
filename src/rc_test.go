@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	drive "github.com/odeke-em/drive/src"
+	drive "github.com/theist/drive/v4/src"
 )
 
 func TestStructuredRC(t *testing.T) {

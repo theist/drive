@@ -93,7 +93,7 @@ The above setup will ensure that the drive binary after compilation can be invok
 To install from the latest source, run:
 
 ```shell
-go get -u github.com/odeke-em/drive/cmd/drive
+go install github.com/theist/drive/v4/cmd/drive@latest
 ```
 
 Otherwise:

@@ -29,7 +29,7 @@ import (
 	"golang.org/x/oauth2/jwt"
 
 	"github.com/mxk/go-flowrate/flowrate"
-	"github.com/odeke-em/drive/config"
+	"github.com/theist/drive/v4/config"
 	"github.com/odeke-em/statos"
 
 	expb "github.com/odeke-em/exponential-backoff"

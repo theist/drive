@@ -1,4 +1,4 @@
-module github.com/odeke-em/drive
+module github.com/theist/drive/v4
 
 go 1.16
 

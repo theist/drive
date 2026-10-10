@@ -25,7 +25,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/odeke-em/drive/config"
+	"github.com/theist/drive/v4/config"
 	"github.com/odeke-em/semalim"
 	"github.com/odeke-em/statos"
 )

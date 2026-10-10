@@ -31,7 +31,7 @@ import (
 
 	"golang.org/x/oauth2"
 
-	"github.com/odeke-em/drive/config"
+	"github.com/theist/drive/v4/config"
 )
 
 const (

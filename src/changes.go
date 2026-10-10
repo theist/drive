@@ -23,8 +23,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/odeke-em/drive/config"
-	"github.com/odeke-em/drive/src/dcrypto"
+	"github.com/theist/drive/v4/config"
+	"github.com/theist/drive/v4/src/dcrypto"
 	"github.com/odeke-em/log"
 )
 

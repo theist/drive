@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	ProjectNewIssueUrl = "https://github.com/odeke-em/drive/issues/new"
+	ProjectNewIssueUrl = "https://github.com/theist/drive/issues/new"
 )
 
 func (g *Commands) FileIssue() error {

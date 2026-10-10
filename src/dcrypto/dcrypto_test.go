@@ -22,7 +22,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/odeke-em/drive/src/dcrypto"
+	"github.com/theist/drive/v4/src/dcrypto"
 )
 
 // randBytes returns random bytes in a byte slice of size.

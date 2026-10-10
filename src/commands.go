@@ -25,7 +25,7 @@ import (
 	"github.com/cheggaaa/pb"
 	"github.com/mattn/go-isatty"
 	expirableCache "github.com/odeke-em/cache"
-	"github.com/odeke-em/drive/config"
+	"github.com/theist/drive/v4/config"
 	"github.com/odeke-em/log"
 )
 

@@ -28,10 +28,10 @@ import (
 	"strings"
 
 	"github.com/odeke-em/command"
-	"github.com/odeke-em/drive/config"
-	"github.com/odeke-em/drive/gen"
-	"github.com/odeke-em/drive/src"
-	"github.com/odeke-em/drive/src/dcrypto"
+	"github.com/theist/drive/v4/config"
+	"github.com/theist/drive/v4/gen"
+	"github.com/theist/drive/v4/src"
+	"github.com/theist/drive/v4/src/dcrypto"
 )
 
 var context *config.Context
