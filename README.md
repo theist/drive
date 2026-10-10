@@ -5,7 +5,9 @@
 
 `drive` is a tiny program to pull or push [Google Drive](https://drive.google.com) files.
 
-`drive` was originally developed by [Burcu Dogan](https://github.com/rakyll) while working on the Google Drive team. Since she is very busy and no longer able to maintain it, I took over drive on `Thursday, 1st January 2015`. This repository contains the latest version of the code.
+`drive` was originally developed by [Burcu Dogan](https://github.com/rakyll) while working on the Google Drive team. Since she is very busy and no longer able to maintain it, [Emmanuel Odeke](https://github.com/odeke-em) took over drive on `Thursday, 1st January 2015`, and maintained it in [his repository](https://github.com/odeke-em/drive).
+
+After five years without updates, and with Google having blocked the way drive used to authorize, [Carlos Peñas](https://github.com/theist) used [Claude](https://claude.com/claude-code) to try to fix the authorization. This repository contains that version of the code.
 
 ## Table of Contents
 
